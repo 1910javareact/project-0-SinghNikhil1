@@ -57,7 +57,7 @@ export async function daoGetAlluser(): Promise<User[]> {
             }
         }
     } finally {
-        client.release()
+      client &&  client.release()
     }
 }
 
@@ -88,7 +88,7 @@ export async function daoGetUserById(userId: number) {
                 }
             }
         } finally {
-            client.release ()
+            client && client.release ()
         }
     }
 export function daoUpdateUser(newUser: User) {
