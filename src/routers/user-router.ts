@@ -1,7 +1,6 @@
 import express from 'express';
-
-import { authorization } from '../../middleware/authorization-middleware';
-import { getAllUser, getUserId, getUpdateUser } from '../services/user-services';
+import { authorization } from '../middleware/authorization-middleware';
+import { getAllUser, getUpdateUser } from '../services/user-services';
 import { daoGetUserById } from '../repository/user-dao';
 
 

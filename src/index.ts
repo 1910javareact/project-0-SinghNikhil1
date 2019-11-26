@@ -2,12 +2,13 @@ import express  from 'express';
 import bodyParser from 'body-parser';
 import { userRouter } from './routers/user-router';
 import {  getUserByUsernameAndPassword } from './services/user-services';
-import { sessionMiddleware } from '../middleware/session-middleware';
+import { sessionMiddleware } from './middleware/session-middleware';
 import { reimbursementRouter } from './routers/reimbersement-router';
+import { loggingMiddleware } from './middleware/logging-middleware';
 
 const app = express();
 
-
+app.use(loggingMiddleware);
 app.use(bodyParser.json());
 app.use(sessionMiddleware);
 
@@ -29,7 +30,7 @@ app.post('/login', (req, res) => {
 });
 
 
-app.listen(1997, () => {
+app.listen(6000, () => {
     console.log('app has started');
 
 

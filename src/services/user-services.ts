@@ -1,4 +1,4 @@
-import { User } from '../models/User';
+import { User } from '../models/user';
 import { daoGetUserByUsernameAndPassword, daoGetAlluser, daoGetUserById, daoUpdateUser } from '../repository/user-dao';
 
 export async function getUserByUsernameAndPassword(username: string, password: string): Promise<User>{
