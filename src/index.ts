@@ -15,13 +15,13 @@ app.use(sessionMiddleware);
 app.use('/user', userRouter );
 app.use('/reimbursements', reimbursementRouter);
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     const {username, password} = req.body;
     if (!username || !password ) {
         res.status(400).send('please have a username and password field');
     }
     try {
-        const user = getUserByUsernameAndPassword(username, password);
+        const user = await getUserByUsernameAndPassword(username, password);
         req.session.user = user;
         res.json(user); // its standard to send the logged in user info after the log in
     } catch (e) {
@@ -30,7 +30,7 @@ app.post('/login', (req, res) => {
 });
 
 
-app.listen(6000, () => {
+app.listen(5000, () => {
     console.log('app has started');
 
 

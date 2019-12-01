@@ -7,15 +7,15 @@ export class User {
 	firstName: string; // not null
 	lastName: string; // not null
 	email: string; // not null
-    role: role[]; // not null
-    constructor(userId: number, username: string, password: string, firstname: string, lastname: string, email: string, role: role[]) {
+    roles: role[]; // not null
+    constructor(userId: number, username: string, password: string, firstname: string, lastname: string, email: string, roles: role[]) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.firstName = firstname;
         this.lastName = lastname;
         this.email = email;
-        this.role = role;
+        this.roles = roles;
 
     }
 }

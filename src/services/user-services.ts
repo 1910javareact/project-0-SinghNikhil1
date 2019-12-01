@@ -26,13 +26,26 @@ export async function getUserId(id: number):Promise<User> {
 
 }
 
-export async function getUpdateUser(req:User) {
-    let user = await daoGetUserById(req.userId)
-for(let key in req){
-    if(req[key] !== undefined && user.hasOwnProperty(key)){
-
+export async function getUpdateUser(req: User){
+    try{
+        let user = await daoGetUserById(req.userId)
+        for(let key in req){
+            if(req[key] !== undefined && user.hasOwnProperty(key)){
+                user[key] = req[key]
+            }
+        }
+        await daoUpdateUser(user)
+        return user
+    }catch(e){
+        throw e
     }
 }
-    return await daoUpdateUser(user);
-    
-}
+
+
+
+
+
+
+
+
+

@@ -7,8 +7,8 @@ import { userDTOtoUser, multiUserDTOUser } from '../util/Userto-to-user';
 export async function daoGetUserByUsernameAndPassword(username: string, password: string):Promise<User> {
     let client: PoolClient;
     try {
-        client: await connectionPool.connect();
-        const result = await client.query('SELECT * FROM project0_reimbursement.users NATURAL JOIN project0_reimbursement.users_roles NATURAL JOIN project0_reimbursement.roles WHERE username = $1 and password = $2',
+        client= await connectionPool.connect();
+        const result = await client.query( 'SELECT * FROM project0_reimbursement.users NATURAL JOIN project0_reimbursement.users_roles NATURAL JOIN project0_reimbursement.roles WHERE username = $1 and password = $2',
         [username, password])
         if (result.rowCount === 0) {
             throw 'Invalid Credential';
@@ -70,7 +70,7 @@ export async function daoGetUserById(userId: number) {
     let client: PoolClient
     try {
         client = await connectionPool.connect()
-        const result = await client.query('SELECT * FROM project0_reimbursement.users NATURAL JOIN project0_reimbursement.users_roles NATURAL JOIN project0_reimbursement.roles where user_id = $1')
+        const result = await client.query('SELECT * FROM project0_reimbursement.users NATURAL JOIN project0_reimbursement.users_roles NATURAL JOIN project0_reimbursement.roles where user_id = $1', [userId])
             if (result.rowCount === 0) {
                 throw 'user does not exist'
             } else {
@@ -83,6 +83,8 @@ export async function daoGetUserById(userId: number) {
                     message: 'User not found'
                 }
             } else {
+                console.log(e);
+                
                 throw{
                     status: 500,
                     message: 'Internal Server Error'
@@ -92,29 +94,38 @@ export async function daoGetUserById(userId: number) {
             client && client.release ()
         }
     }
-    export async function daoUpdateUser(newUser: User){
-        let client: PoolClient
-        try{
-            client = await connectionPool.connect()
-            client.query('BEGIN')
-            await client.query('update project0_reimbursement.users SET username =$1, password =$2, firstname = $3, lastname = $4, email = $5 where user_id =$6',
-            [newUser.username, newUser.password, newUser.firstName, newUser.lastName, newUser.email, newUser.userId]);
-            await client.query('update project0_reimbursement.users_roles SET role_id = $1 where user_id = $2 ',
- [newUser.role, newUser.userId]);
-            for( let role in newUser.role){
-                await client.query('')
+    export async function daoUpdateUser(newUser: User) {
+        let client: PoolClient;
+        try {
+            client = await connectionPool.connect();
+            client.query('BEGIN');
+            await client.query('update project0_reimbursement.users set username = $1, password = $2, first_name = $3, last_name = $4, email = $5 where user_id = $6',
+                [newUser.username, newUser.password, newUser.firstName, newUser.lastName, newUser.email, newUser.userId]);
+            await client.query('delete from project0_reimbursement.users_roles where user_id = $1',
+                [newUser.userId]);
+            for ( const role of newUser.roles) {
+                await client.query('insert into project0_reimbursement.users_roles values ($1,$2)',
+                [newUser.userId, role.roleId]);
             }
-            client.query('COMMIT')
-        }catch(e){
-            client.query('ROLLBACK')
+            client.query('COMMIT');
+        } catch (e) {
+            client.query('ROLLBACK');
             throw {
                 status: 500,
                 message: 'Internal Server Error'
-            }
-        }finally{
-            client.release()
+            };
+        } finally {
+            client.release();
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     

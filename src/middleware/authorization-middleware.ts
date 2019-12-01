@@ -1,32 +1,30 @@
-export function authorization(roleIds: number[], userId?: boolean){
-    return (req, res, next)=>{        
-        let isAuth = false
-        
-        if(!req.session.user){
-            res.status(400).send('Please log in')
-            return
+export function authorization(roleIds: number[], userId?: boolean) {
+    return (req, res, next) => {
+        let auth = false;
+        if (!req.session.user) {
+            res.status(400).send('Please log in');
+            return;
         }
-        
-       
-    //To check if role is authorized
-        if(roleIds.includes(req.session.user.role.roleId)){
-            isAuth = true
+        // check if there role has authorization
+        for ( const role of req.session.user.roles) {
+            if (roleIds.includes(role.roleId)) {
+                auth = true;
+            }
         }
-
-        //To check if the userId is same as what they are trying to access
-        if(userId){
-            let id = +req.params.id
-            if(!isNaN(id)){
-                if(req.session.user.userId === id){
-                    isAuth = true
+        // check if userId is the same as what they're trying to access
+        // put false or don't enter second param if you don't want to check user id
+        if (userId) {
+            const id = +req.params.userId;
+            if (!isNaN(id)) {
+                if (req.session.user.userId === id) {
+                    auth = true;
                 }
             }
         }
-
-        if(isAuth){
-            next()
-        }else{
-            res.status(401).send("The incoming token has expired")
+        if (auth) {
+            next();
+        } else {
+            res.status(401).send('The incoming token has expired');
         }
-    }
+    };
 }

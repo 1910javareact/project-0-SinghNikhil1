@@ -4,22 +4,20 @@ import { getReimbursementsByStatusId, getReimbursementsByUserId, patchReimbersem
 
 export const reimbursementRouter = express.Router()
 //get reimbursement by status
-reimbursementRouter.get('/status/:statusId',authorization([1]), async (req,res) =>{  
-      let statusId = +req.params.statusId
-    if(isNaN(statusId)){
-        res.status(400).send('Invalid ID')
-    }
-    else{ 
-        try {
-            let reimbursements = await getReimbursementsByStatusId(statusId)
-        res.json(reimbursements)
+reimbursementRouter.get('/status/:statusId', authorization([1]),
+    async (req, res) => {
+        let statusId = +req.params.statusId
+        if (isNaN(statusId)) {
+            res.status(400).send('Invalid statusId')
+        } else {
+            try {
+                let reimbursements = await getReimbursementsByStatusId(statusId)
+                res.json(reimbursements)
+            } catch (e) {
+                res.status(e.status).send(e.message)
+            }
         }
-        catch(e){
-            res.status(e.status).send(e.message)
-        }
-    }
-})
-
+    })
 //get reimbursement by user
 
 reimbursementRouter.get('/author/userId/:userId',authorization([1]), async (req,res) =>{

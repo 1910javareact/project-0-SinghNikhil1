@@ -7,7 +7,7 @@ export async function daoGetReimbursementsByStatusId(statusId: number){
     let client: PoolClient
     try{
         client = await connectionPool.connect()
-        let result = await client.query('SELECT * FROM project_0.reimbursement NATURAL JOIN project_0.reimbursement_status NATURAL JOIN project_0.reimbursement_type WHERE status_id = $1 ORDER BY date_submitted DESC',
+        let result = await client.query('SELECT * FROM project0_reimbursement.reimbursement NATURAL JOIN project0_reimbursement.reimbursement_status NATURAL JOIN project0_reimbursement.reimbursement_type WHERE status_id = $1 ORDER BY date_submitted DESC',
         [statusId])
         if(result.rowCount === 0){
             throw 'No Reimbursements By That Status'
@@ -37,7 +37,8 @@ export async function daoGetReimbursementsByUserId(userId: number){
     let client: PoolClient
     try{
         client = await connectionPool.connect()
-        let result = await client.query('SELECT * FROM project_0.reimbursement NATURAL JOIN project_0.reimbursement_status NATURAL JOIN project_0.reimbursement_type WHERE author = $1 ORDER BY date_submitted DESC',
+        
+        let result = await client.query('SELECT * FROM project0_reimbursement.reimbursement NATURAL JOIN project0_reimbursement.reimbursement_status NATURAL JOIN project0_reimbursement.reimbursement_type WHERE author = $1 ORDER BY date_submitted DESC',
         [userId])
         if(result.rowCount === 0){
             throw 'No Reimbursements By That User'
@@ -68,9 +69,10 @@ export async function daoPostReimbersement(post){
     try{
         client = await connectionPool.connect()
         client.query('BEGIN')
-        await client.query('INSERT INTO project_0.reimbursement (author, amount, date_submitted, date_resolved, description, resolver, status_id, type_id) values ($1,$2,now(),$3,$4,null,1,$5)',
+        await client.query('INSERT INTO project0_reimbursement.reimbursement (author, amount, date_submitted, date_resolved, description, resolver, status_id, type_id) values ($1,$2,now(),$3,$4,null,1,$5)',
             [post.author, post.amount, '0001/01/01', post.description, post.type])
-        let result = await client.query('SELECT * FROM project_0.reimbursement WHERE author = $1 ORDER BY reimbursement_id DESC LIMIT 1 OFFSET 0',
+       //corrected this query 
+            let result = await client.query('SELECT * from project0_reimbursement.reimbursement WHERE author = $1 ORDER BY reimbursement_id DESC LIMIT 1 OFFSET 0',
             [post.author])
         client.query('COMMIT')
         return reimbursementDTOtoReimbursement(result.rows)
@@ -90,7 +92,8 @@ export async function daoGetReimbursementsByReimbursementId(reimbursementId: num
     let client: PoolClient
     try{
         client = await connectionPool.connect()        
-        let result = await client.query('SELECT * FROM project_0.reimbursement WHERE reimbursement_id = $1',
+        //corrected this query
+        let result = await client.query(' SELECT * FROM project0_reimbursement.reimbursement WHERE reimbursement_id = $1',
         [reimbursementId])        
         if(result.rowCount === 0){
             throw 'Reimbursement Does Not Exist'
@@ -119,7 +122,7 @@ export async function daoUpdateReimbursement(reimbursementUpdate: reimbursement)
     let client: PoolClient
     try{
         client = await connectionPool.connect()
-        await client.query('UPDATE project_0.reimbursement SET date_resolved = now(), resolver = $1, status_id = $2 WHERE reimbursement_id = $3',
+        await client.query('UPDATE project0_reimbursement.reimbursement SET date_resolved = now(), resolver = $1, status_id = $2 WHERE reimbursement_id = $3',
         [reimbursementUpdate.resolver,reimbursementUpdate.status, reimbursementUpdate.reimbursementId])
         return await daoGetReimbursementsByReimbursementId(reimbursementUpdate.reimbursementId)
     }catch(e){
