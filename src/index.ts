@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import { userRouter } from './routers/user-router';
 import {  getUserByUsernameAndPassword } from './services/user-services';
 import { sessionMiddleware } from './middleware/session-middleware';
-import { reimbursementRouter } from './routers/reimbersement-router';
+import { reimbursementsRouter } from './routers/reimbersement-router';
 import { loggingMiddleware } from './middleware/logging-middleware';
 
 const app = express();
@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(sessionMiddleware);
 
 app.use('/user', userRouter );
-app.use('/reimbursements', reimbursementRouter);
+app.use('/reimbursements', reimbursementsRouter);
 
 app.post('/login', async (req, res) => {
     const {username, password} = req.body;
@@ -26,11 +26,13 @@ app.post('/login', async (req, res) => {
         res.json(user); // its standard to send the logged in user info after the log in
     } catch (e) {
         res.status(e.status).send(e.message);
+        console.log(e);
+        
     }
 });
 
 
-app.listen(5000, () => {
+app.listen(6000, () => {
     console.log('app has started');
 
 

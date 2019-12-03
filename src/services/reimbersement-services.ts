@@ -1,47 +1,49 @@
-import { daoUpdateReimbursement, daoGetReimbursementsByReimbursementId } from "../repository/reimbursement-dao"
+import { daoUpdateReimbursement, daoGetReimbursementsByReimbursementId, daoPostReimbersement, daoGetReimbursementsByUserId, daoGetReimbursementsByStatusId } from "../repository/reimbursement-dao"
 
 
 export function getReimbursementsByStatusId(statusId: number) {
     try {
-        return getReimbursementsByStatusId(statusId)
+        return daoGetReimbursementsByStatusId(statusId);
     } catch (e) {
-        throw e
+        throw e;
     }
 }
 
-
+// call the daoGetReimbursementsByUserId and return the data once it's collected
 export function getReimbursementsByUserId(userId: number) {
     try {
-        return getReimbursementsByUserId(userId)
+        return daoGetReimbursementsByUserId(userId);
     } catch (e) {
-        throw e
+        throw e;
     }
 
 }
 
-
+// call the daoPostReimbersement and return the post
 export function postReimbersement(post) {
     try {
-        return daoGetReimbursementsByReimbursementId(post)
+        return daoPostReimbersement(post);
     } catch (e) {
-        throw e
+        console.log(e);
+        
+        throw e;
     }
 
 }
 
-
+// call the daoPatchReimbersement and return the updated post
 export async function patchReimbersement(patch) {
     try {
-        let post = await getReimbursementsByStatusId(patch.reimbursementId)
-        for (let key in post) {
+        const post = await daoGetReimbursementsByReimbursementId(patch.reimbursementId);
+        for (const key in post) {
             if (patch.hasOwnProperty(key)) {
-                post[key] = patch[key]
+                post[key] = patch[key];
             }
         }
-        return await daoUpdateReimbursement(post)
+        return await daoUpdateReimbursement(post);
     } catch (e) {
-        throw e
+        
+        throw e;
     }
 
 }
-

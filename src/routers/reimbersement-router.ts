@@ -1,83 +1,87 @@
 import express from "express"
 import { authorization } from "../middleware/authorization-middleware"
-import { getReimbursementsByStatusId, getReimbursementsByUserId, patchReimbersement } from "../services/reimbersement-services"
+import { getReimbursementsByStatusId, getReimbursementsByUserId, patchReimbersement, postReimbersement } from "../services/reimbersement-services"
 
-export const reimbursementRouter = express.Router()
-//get reimbursement by status
-reimbursementRouter.get('/status/:statusId', authorization([1]),
+export const reimbursementsRouter = express.Router();
+
+// finding reimbursements by status
+reimbursementsRouter.get('/status/:statusId', authorization([1]),
     async (req, res) => {
-        let statusId = +req.params.statusId
+        const statusId = +req.params.statusId;
         if (isNaN(statusId)) {
-            res.status(400).send('Invalid statusId')
+            res.status(400).send('Invalid statusId');
         } else {
             try {
-                let reimbursements = await getReimbursementsByStatusId(statusId)
-                res.json(reimbursements)
+                const reimbursements = await getReimbursementsByStatusId(statusId);
+                res.json(reimbursements);
             } catch (e) {
-                res.status(e.status).send(e.message)
+                res.status(e.status).send(e.message);
             }
         }
-    })
-//get reimbursement by user
+    });
 
-reimbursementRouter.get('/author/userId/:userId',authorization([1]), async (req,res) =>{
-    let userId = +req.params.userId
-    if(isNaN(userId)){
-        res.status(400).send('Invalid ID')
-    }
-    else{
-        try{
-            let reimbursements = await getReimbursementsByUserId(userId)
-        res.json(reimbursements)
-        }catch(e){
-            res.status(e.status).send(e.message)
+// get reimbursements by userId
+reimbursementsRouter.get('/author/userId/:userId', authorization([1], true),
+    async (req, res) => {
+        const userId = +req.params.userId;
+        if (isNaN(userId)) {
+            res.status(400).send('Invalid userId');
+        } else {
+            try {
+                const reimbursements = await getReimbursementsByUserId(userId);
+                res.json(reimbursements);
+            } catch (e) {
+                res.status(e.status).send(e.message);
+            }
         }
+    });
 
-    }
-
-})
-
-//submit reimbursement
-
-    reimbursementRouter.post('', authorization([1,2,3]), async (req, res)=>{
-        let {body} = req
-        let singleReimbursement = {
+// submit a riembursement, date submitted will be handled in the database
+// amount description and type are all that are required
+reimbursementsRouter.post('', authorization([1, 2, 3]),
+    async (req, res) => {
+        const { body } = req;
+        const post = {
             author: req.session.user.userId,
             amount: body.amount,
             description: body.description,
             type: body.type
-        }
-        for(let key in singleReimbursement){
-            if(!singleReimbursement[key]){
-                res.status(400).send('Please include all fields')
-            }
-        }
-        try{
-            let newReimbursement = await patchReimbersement(singleReimbursement)
-          res.status(201).json(newReimbursement)
-        }
-        catch(e){
-           res.status(e.status).send(e.message)
-        }
-    })
-
-    reimbursementRouter.patch('', authorization([1]),
-    async (req, res) => {
-        let { body } = req
-        let patch = {
-            reimbursementId: body.reimbursementId,
-            resolver: req.session.user.userId,
-            status: body.status
-        }
-        for (let key in patch) {
-            if (!patch[key]) {
-                res.status(400).send('Please include a status and reimbursement Id')
+        };
+        for (const key in post) {
+            if (!post[key]) {
+                res.status(400).send('Please inclued all fields');
             }
         }
         try {
-            let newPost = await patchReimbersement(patch)
-            res.status(201).json(newPost)
+            const newPost = await postReimbersement(post);
+            
+            res.status(201).json(newPost);
         } catch (e) {
-            res.status(e.status).send(e.message)
+            res.status(e.status).send(e.message);
         }
-    })
+    });
+
+// update a reimbursement
+// only finance managers are allowed to update a request, and they can only approve or deny them
+// only a status and reimbursementId is required
+reimbursementsRouter.patch('', authorization([1]),
+    async (req, res) => {
+        const { body } = req;
+        const patch = {
+            reimbursementId: body.reimbursementId,
+            resolver: req.session.user.userId,
+            status: body.status
+        };
+        for (const key in patch) {
+            if (!patch[key]) {
+                res.status(400).send('Please include a status and reimbursement Id');
+            }
+        }
+        try {
+            const newPost = await patchReimbersement(patch);
+            res.status(201).json(newPost);
+        } catch (e) {
+            
+            res.status(e.status).send(e.message);
+        }
+    });
