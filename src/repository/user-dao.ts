@@ -6,7 +6,7 @@ import { userDTOtoUser, multiUserDTOUser } from '../util/Userto-to-user';
 //get username and password
 export async function daoGetUserByUsernameAndPassword(username: string, password: string):Promise<User> {
     let client: PoolClient;
-    try {
+    try { 
         client= await connectionPool.connect();
         const result = await client.query( 'SELECT * FROM project0_reimbursement.users NATURAL JOIN project0_reimbursement.users_roles NATURAL JOIN project0_reimbursement.roles WHERE username = $1 and password = $2',
         [username, password])

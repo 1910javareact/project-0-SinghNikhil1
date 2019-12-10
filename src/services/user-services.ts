@@ -30,7 +30,7 @@ export async function getUpdateUser(req: User){
     try{
         let user = await daoGetUserById(req.userId)
         for(let key in req){
-            if(req[key] !== undefined && user.hasOwnProperty(key)){
+            if(req[key] !== undefined && user.hasOwnProperty(key)){                 //checking weath the  property is own property or not
                 user[key] = req[key]
             }
         }

@@ -8,7 +8,7 @@ export async function daoGetReimbursementsByStatusId(statusId: number) {
     try {
         client = await connectionPool.connect();
         const result = await client.query('SELECT * FROM project0_reimbursement.reimbursement NATURAL JOIN project0_reimbursement.users_reimbursement_status NATURAL JOIN project0_reimbursement.users_reimbursement_type WHERE status_id = $1 ORDER BY date_submitted DESC',
-        [statusId])
+        [statusId])                                                                                                    
 
         if (result.rowCount === 0) {
             throw 'No Reimbursements By That Status';
@@ -73,15 +73,15 @@ export async function daoPostReimbersement(post) {
     let client: PoolClient;
     try {
         client = await connectionPool.connect();
-        client.query('BEGIN');
+        client.query('BEGIN');                                                                                 
         await client.query('INSERT INTO project0_reimbursement.reimbursement (author, amount, date_submitted, date_resolved, description, resolver, status, type) values ($1,$2,$3,$4,$5,null,1,$6)',
             [post.author, post.amount, Date.now() / 1000, 0, post.description, post.type]);
         const result = await client.query('SELECT * FROM project0_reimbursement.reimbursement WHERE author = $1 ORDER BY reimbursement_id DESC LIMIT 1 OFFSET 0',
             [post.author]);
-        client.query('COMMIT');
+        client.query('COMMIT');                                                                                  
         return reimbursementDTOtoReimbursement(result.rows);
     } catch (e) {
-        client.query('ROLLBACK');
+        client.query('ROLLBACK');                                                                  //if it is not completed don't run 0r if it is fsiled just
         console.log(e);
         
         throw{
@@ -97,13 +97,13 @@ export async function daoPostReimbersement(post) {
 export async function daoGetReimbursementsByReimbursementId(reimbursementId: number) {
     let client: PoolClient;
     try {
-        client = await connectionPool.connect();
-        const result = await client.query('SELECT * FROM project_0.reimbursement WHERE reimbursement_id = $1',
+        client = await connectionPool.connect();                                                                      // connect to the database connectionpool includes hosy,usernam,database,password
+        const result = await client.query('SELECT * FROM project0_reimbursement.reimbursement WHERE reimbursement_id = $1',
         [reimbursementId]);
         if (result.rowCount === 0) {
             throw 'Reimbursement Does Not Exist';
         } else {
-            return reimbursementDTOtoReimbursement(result.rows);
+            return reimbursementDTOtoReimbursement(result.rows);                                           //taking sql and changing into the object so thhatthe typesceipt can read the data from database
         }
     } catch (e) {
         if (e === 'Reimbursement Does Not Exist') {

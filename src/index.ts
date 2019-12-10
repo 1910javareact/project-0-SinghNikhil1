@@ -8,9 +8,9 @@ import { loggingMiddleware } from './middleware/logging-middleware';
 
 const app = express();
 
-app.use(loggingMiddleware);
-app.use(bodyParser.json());
-app.use(sessionMiddleware);
+app.use(loggingMiddleware);                                                                                     //having info about what people are doing 
+app.use(bodyParser.json());                                                                               //conv text to obj and pbj(jason) to text.(username)                               
+app.use(sessionMiddleware);                                                                                             // who is logged in 
 
 app.use('/user', userRouter );
 app.use('/reimbursements', reimbursementsRouter);
@@ -32,7 +32,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.listen(6000, () => {
+app.listen(6000, () => {    //in order to read data inside http request. taking bp jason from html req into js object
     console.log('app has started');
 
 

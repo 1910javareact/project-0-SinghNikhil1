@@ -1,13 +1,12 @@
 import express from 'express';
 import { authorization } from '../middleware/authorization-middleware';
-import { getAllUser, getUpdateUser } from '../services/user-services';
-import { daoGetUserById } from '../repository/user-dao';
+import { getAllUser, getUpdateUser, getUserId } from '../services/user-services';
 import { loggingMiddleware } from '../middleware/logging-middleware';
 
 
 //get all users
 export const userRouter = express.Router();
- async function controllerGetUsers(req, res) {// the express function
+ async function controllerGetUsers(req, res) { // the express function
   try {
     const users = await getAllUser();
     res.json(users);
@@ -23,7 +22,7 @@ userRouter.get('/:id', async (req, res) => {
         res.sendStatus(400);
     } else {
         try {
-        const users = await daoGetUserById(id);
+        const users = await getUserId(id);
         res.json(users);
         } catch (e) {
             res.status(e.status).send(e.message);

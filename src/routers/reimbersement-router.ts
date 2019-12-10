@@ -21,7 +21,7 @@ reimbursementsRouter.get('/status/:statusId', authorization([1]),
     });
 
 // get reimbursements by userId
-reimbursementsRouter.get('/author/userId/:userId', authorization([1], true),
+reimbursementsRouter.get('/author/userId/:userId', authorization([1]),
     async (req, res) => {
         const userId = +req.params.userId;
         if (isNaN(userId)) {
@@ -42,7 +42,7 @@ reimbursementsRouter.post('', authorization([1, 2, 3]),
     async (req, res) => {
         const { body } = req;
         const post = {
-            author: req.session.user.userId,
+            author: req.session.user.userId,                                                                 //session is who is logged in 
             amount: body.amount,
             description: body.description,
             type: body.type
@@ -67,18 +67,14 @@ reimbursementsRouter.post('', authorization([1, 2, 3]),
 reimbursementsRouter.patch('', authorization([1]),
     async (req, res) => {
         const { body } = req;
-        const patch = {
-            reimbursementId: body.reimbursementId,
-            resolver: req.session.user.userId,
-            status: body.status
-        };
+        const patch =body.reimbursementId;
         for (const key in patch) {
             if (!patch[key]) {
                 res.status(400).send('Please include a status and reimbursement Id');
             }
         }
         try {
-            const newPost = await patchReimbersement(patch);
+            const newPost = await patchReimbersement(patch);               //calling it from the servers
             res.status(201).json(newPost);
         } catch (e) {
             

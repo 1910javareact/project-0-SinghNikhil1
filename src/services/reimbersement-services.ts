@@ -22,7 +22,7 @@ export function getReimbursementsByUserId(userId: number) {
 // call the daoPostReimbersement and return the post
 export function postReimbersement(post) {
     try {
-        return daoPostReimbersement(post);
+        return daoPostReimbersement(post);//passing to the dao and returning to the router 
     } catch (e) {
         console.log(e);
         
@@ -32,16 +32,19 @@ export function postReimbersement(post) {
 }
 
 // call the daoPatchReimbersement and return the updated post
-export async function patchReimbersement(patch) {
+export async function patchReimbersement(patch) {                                      //user sended us yo be updated 
     try {
-        const post = await daoGetReimbursementsByReimbursementId(patch.reimbursementId);
+        const post = await daoGetReimbursementsByReimbursementId(patch.reimbursementId);// values which are already inthe database                 calling this function from the dao
         for (const key in post) {
             if (patch.hasOwnProperty(key)) {
+                console.log(patch[key]);
+                
                 post[key] = patch[key];
             }
         }
         return await daoUpdateReimbursement(post);
     } catch (e) {
+        console.log(e);
         
         throw e;
     }
